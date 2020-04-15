@@ -25,6 +25,9 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 playerScale;
     bool crouching;
 
+
+    private bool isAtLadder = false; //Joe- paired with trigger collision to reverse gravity and allow player to rise out of vent
+
     private void Start()
     {
         playerScale = transform.localScale;
@@ -60,17 +63,26 @@ public class PlayerMovement : MonoBehaviour
     }
     */
 
-    void Gravity()
+    void Gravity() //joe- added an if statment that determins if the player is at the ladder
     {
-        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
-
-        if(isGrounded && vel.y < 0)
+        if (isAtLadder == false)
         {
-            vel.y = -2f;
-        }
+            isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
-        vel.y += gravity * Time.deltaTime;
-        controller.Move(vel * Time.deltaTime);
+            if (isGrounded && vel.y < 0)
+            {
+                vel.y = -2f;
+            }
+
+            vel.y += gravity * Time.deltaTime;
+            controller.Move(vel * Time.deltaTime);
+        }
+        else // joe- if they are at a ladder and hold spcae, reverse gravity to simulate climbing
+        {        
+            vel.y = 4f;           
+            vel.y += gravity * Time.deltaTime;
+            controller.Move(vel * Time.deltaTime);
+        }
     }
 
     void Crouch()
@@ -99,5 +111,24 @@ public class PlayerMovement : MonoBehaviour
         {
             speed = 8;
         }
+    }
+
+
+
+    //joe-trigger collision check while are at ladder and holding space
+    private void OnTriggerStay(Collider other)
+    {
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            isAtLadder = true;
+        }
+        if(Input.GetKeyUp(KeyCode.Space))
+        {
+            isAtLadder = false;
+        }
+    }
+    private void OnTriggerExit(Collider other)//joe- when they leave collision, resume gravity
+    {
+        isAtLadder = false;
     }
 }
