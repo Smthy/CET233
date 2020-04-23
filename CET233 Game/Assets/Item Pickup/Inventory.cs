@@ -50,7 +50,7 @@ public class Inventory : MonoBehaviour
     // becomes null
     public void DropItem()
     {
-        if (hasItem && Input.GetKeyDown(KeyCode.E))
+        if (hasItem == true && Input.GetKeyDown(KeyCode.E))
         {
             if (itemName == "item1")
             {
@@ -73,7 +73,7 @@ public class Inventory : MonoBehaviour
 
             droppedItem = Instantiate(heldItem, transform.position + (transform.forward * 2), transform.rotation);
             droppedItem.name = itemName;
-
+            
 
             hasItem = false;
             Debug.Log("item dropped");
