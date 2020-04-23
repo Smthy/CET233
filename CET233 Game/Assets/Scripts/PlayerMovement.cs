@@ -25,8 +25,15 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 playerScale;
     bool crouching;
 
-
+    
     private bool isAtLadder = false; //Joe- paired with trigger collision to reverse gravity and allow player to rise out of vent
+    public bool playerIsInfected = true;
+    private bool playerInsideScanner;
+    public GameObject ScannerText;
+    public Light airlockLight;
+    public GameObject airlock;
+    public AirlockRotate airlockScript;
+
 
     private void Start()
     {
@@ -118,17 +125,122 @@ public class PlayerMovement : MonoBehaviour
     //joe-trigger collision check while are at ladder and holding space
     private void OnTriggerStay(Collider other)
     {
-        if(Input.GetKeyDown(KeyCode.Space))
+        if(other.CompareTag("Vent"))
         {
-            isAtLadder = true;
+            if (Input.GetKeyDown(KeyCode.Space) && other.CompareTag("Vent"))
+            {
+                isAtLadder = true;
+            }
+            if (Input.GetKeyUp(KeyCode.Space))
+            {
+                isAtLadder = false;
+            }
+        }        
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.CompareTag("Scanner")) // turn on 3d text when player enters scanner room
+        { //determin if player is infected or not
+            Debug.Log("PlayerEnterScanner");
+            ScannerText.GetComponent<TextMesh>().color = new Color32(255, 170, 0, 225);
+            ScannerText.GetComponent<TextMesh>().text = "Scanning occupant";
+            ScannerText.SetActive(true);
+            playerInsideScanner = true;
+            StartCoroutine(scanPlayer());
         }
-        if(Input.GetKeyUp(KeyCode.Space))
+    }
+
+    private void OnTriggerExit(Collider other)//joe- when they leave collision, resume gravity
+    {
+        if(other.CompareTag("Vent"))
         {
             isAtLadder = false;
         }
+
+
+        if(other.CompareTag("Scanner")) //turn off 3d text when player leaves scanner room
+        {
+            Debug.Log("playerLeftScanner");
+            playerInsideScanner = false;
+            ScannerText.SetActive(false);
+            airlockLight.color = Color.white;
+        }        
     }
-    private void OnTriggerExit(Collider other)//joe- when they leave collision, resume gravity
+
+
+    IEnumerator scanPlayer()
     {
-        isAtLadder = false;
+        yield return new WaitForSeconds(2f);
+
+
+        if (playerIsInfected == true) //script if player is infected
+        {
+            airlockLight.color = Color.red;
+            if (playerInsideScanner == true)
+            {                
+                ScannerText.GetComponent<TextMesh>().color = Color.red;
+                ScannerText.GetComponent<TextMesh>().text = "Contamination detected";
+            }
+
+
+            if (playerInsideScanner == true)
+            {
+                yield return new WaitForSeconds(1.5f);
+                ScannerText.GetComponent<TextMesh>().text = " Inhabitant";
+            }
+
+
+            if (playerInsideScanner == true)
+            {
+                yield return new WaitForSeconds(1.5f);
+                ScannerText.GetComponent<TextMesh>().text = "please make your way to...";
+            }
+
+
+            if (playerInsideScanner == true)
+            {
+                yield return new WaitForSeconds(1.5f);
+                ScannerText.GetComponent<TextMesh>().text = "the Isolation Center.";
+            }
+
+            if (playerInsideScanner == true)
+            {
+                yield return new WaitForSeconds(1.5f);
+                ScannerText.GetComponent<TextMesh>().text = "Currently located in...";
+            }
+
+            if (playerInsideScanner == true)
+            {
+                yield return new WaitForSeconds(1.5f);
+                ScannerText.GetComponent<TextMesh>().text = " the Cafeteria.";
+            }
+
+            if (playerInsideScanner == true)
+            {
+                yield return new WaitForSeconds(1.5f);
+                ScannerText.GetComponent<TextMesh>().text = "Exit Scanning area";
+            }
+        }
+        
+
+
+        if(playerIsInfected == false) //script if player is cured
+        {
+            airlockLight.color = Color.green;
+            airlock.GetComponent<Collider>().enabled = !airlock.GetComponent<Collider>().enabled;
+            ScannerText.GetComponent<TextMesh>().color = Color.green;
+            ScannerText.GetComponent<TextMesh>().text = "Inhabitant is not contaminated.";           
+            yield return new WaitForSeconds(1.5f);
+            ScannerText.GetComponent<TextMesh>().text = "Opening airlock valve...";           
+            yield return new WaitForSeconds(1.5f);
+            ScannerText.GetComponent<TextMesh>().text = "please follow the pathway...";        
+            yield return new WaitForSeconds(1.5f);
+            ScannerText.GetComponent<TextMesh>().text = "to the Escape Shuttle.";
+            airlockScript.rotateObject();
+            
+        }
     }
+
+
 }

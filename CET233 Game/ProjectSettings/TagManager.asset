@@ -7,6 +7,9 @@ TagManager:
   - Ground
   - Alien
   - Node
+  - item
+  - Vent
+  - Scanner
   layers:
   - Default
   - TransparentFX
