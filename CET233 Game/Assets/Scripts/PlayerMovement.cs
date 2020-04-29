@@ -100,7 +100,7 @@ public class PlayerMovement : MonoBehaviour
             transform.localScale = crouchScale;
             speed = 4f;
         }
-        if (Input.GetKeyUp(KeyCode.LeftControl))
+        if (Input.GetKeyUp(KeyCode.LeftControl) && this.transform.position.y > -1.5)
         {
             crouching = false;
             transform.localScale = playerScale;
