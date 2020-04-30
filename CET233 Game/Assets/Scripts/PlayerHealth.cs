@@ -31,7 +31,7 @@ public class PlayerHealth : MonoBehaviour
 
         if (pHealth <= 0f)
         {
-            Destroy(this);
+            Destroy(gameObject);
         }
     }    
 }
