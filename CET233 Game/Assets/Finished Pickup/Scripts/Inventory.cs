@@ -73,7 +73,7 @@ public class Inventory : MonoBehaviour
 
             droppedItem = Instantiate(heldItem, transform.position + (transform.forward * 2), transform.rotation);
             droppedItem.name = itemName;
-            
+            heldItem = null;
 
             hasItem = false;
             Debug.Log("item dropped");
@@ -87,9 +87,9 @@ public class Inventory : MonoBehaviour
     public void PickupItem()
     {
 
-        if (inrange && Input.GetKey(KeyCode.E) && !hasItem)
+        if (inrange && Input.GetKeyDown(KeyCode.E) && !hasItem)
         {
-            hasItem = true;
+            
             itemName = itemNear.name;
             items.text = "Item Equipped: " + itemName;
 
@@ -97,11 +97,16 @@ public class Inventory : MonoBehaviour
 
             txtPress.enabled = false;
             Debug.Log("item picked up");
+            StartCoroutine(waitFive());
+            hasItem = true;
         }
 
     }
 
-
+    IEnumerator waitFive()
+    {
+        yield return new WaitForSeconds(5);
+    }
 
     // When player near an item txt to press E gets enabled, and the item is sotred in a variable
     private void OnTriggerEnter(Collider other)
